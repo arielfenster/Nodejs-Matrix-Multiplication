@@ -1,0 +1,29 @@
+{
+  "name": "fincom-home-assignment",
+  "version": "1.0.0",
+  "description": "A Node.js matrix multiplication service",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arielfenster/Nodejs-Matrix-Multiplication.git"
+  },
+  "author": "Ariel Fenster",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arielfenster/Nodejs-Matrix-Multiplication/issues"
+  },
+  "homepage": "https://github.com/arielfenster/Nodejs-Matrix-Multiplication#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/node": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
