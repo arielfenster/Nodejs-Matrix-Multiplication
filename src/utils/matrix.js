@@ -49,11 +49,10 @@ export const saveMatrixToFile = (fileName, matrix) => {
   
   const filePath = path.join(__dirname, '../data', `/${fileName}`);
 
-  fs.writeFile(filePath, matrixString, {}, (err) => {
-    if (err) {
-      console.error('Failed to save the file: ', err);
-    } else {
-      console.log('File saved');
-    }
-  });
+  try {
+    fs.writeFileSync(filePath, matrixString, { encoding: 'utf-8' });
+    console.log('File saved');
+  } catch (error) {
+    console.error('Failed to save the file: ', err);
+  }
 };

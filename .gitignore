@@ -1,6 +1,9 @@
 // build
 node_modules
 
+// test data
+src/data/
+
 // etc
 Task.pdf
 task.txt

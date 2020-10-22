@@ -1,7 +1,6 @@
 import express from "express";
 import { generateMatrix, parseMatrix, saveMatrixToFile } from '../utils/matrix';
-import fs from 'fs';
-import path, { dirname } from 'path';
+import path from 'path';
 
 
 const router = express.Router();
@@ -17,7 +16,9 @@ router.post('/generate', (req, res) => {
   
   saveMatrixToFile('random.txt', matrix);
 
-  res.status(201).sendFile(path.join(__dirname, '../data', '/random.txt'));
+  res.status(201).sendFile(path.join(__dirname, '../data/random.txt'), (err) => {
+    if (err) { res.status(500).send(err) }
+  });
 });
 
 
