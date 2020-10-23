@@ -3,7 +3,7 @@ import path from 'path';
 import streamifier from 'streamifier';
 import { createArrayCsvWriter } from 'csv-writer';
 
-const checkFileNameSuffix = (fileName) => {
+const checkFilenameSuffix = (fileName) => {
   // Check for the file name's suffix and modify it if necessary
   if (!fileName.endsWith('.csv')) {
     fileName += '.csv';
@@ -15,7 +15,7 @@ const checkFileNameSuffix = (fileName) => {
 }
 
 const saveMatrixToFile = async ({ fileName, matrix }) => {
-  fileName = checkFileNameSuffix(fileName);
+  fileName = checkFilenameSuffix(fileName);
   
   const filePath = path.join(__dirname, '../data', `/${fileName}`);
 
@@ -40,7 +40,14 @@ const uploadMatricesFiles = (files) => {
   }
 };
 
+const getMatrixFilePath = (name) => {
+  name = checkFilenameSuffix(name);
+  return path.join(__dirname, '../data', `/${name}`);
+}
+
+
 export default {
   saveMatrixToFile,
   uploadMatricesFiles,
+  getMatrixFilePath
 };

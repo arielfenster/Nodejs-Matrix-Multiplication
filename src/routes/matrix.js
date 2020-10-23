@@ -24,7 +24,7 @@ router.post('/generate', async (req, res) => {
   const savedFilePath = await filesUtils.saveMatrixToFile({ fileName: MATRIX_CONSTS.RANDOM_MATRIX_FILENAME, matrix });
   
   res.status(201).sendFile(savedFilePath, (err) => {
-    if (err) { res.status(500).send(err) }
+    if (err) { res.status(500).end(err) }
   });
 });
 
@@ -49,22 +49,31 @@ router.post('/', upload.fields([
 /**
  * @description Calculate the product of the matrices
  */
-router.get('/', (req, res) => {
-  const result = calculate({
-    streamFileA: 123,
-    streamFileB: 213,
+router.get('/', async (req, res) => {
+  const matrixAPath = filesUtils.getMatrixFilePath(UPLOAD_CONSTS.MATRIX_A);
+  const matrixBPath = filesUtils.getMatrixFilePath(UPLOAD_CONSTS.MATRIX_B);
+
+  const readStreamA = fs.createReadStream(matrixAPath, { encoding: 'utf-8' });
+  const readStreamB = fs.createReadStream(matrixBPath, { encoding: 'utf-8' });
+
+  const result = mathUtils.calculate({
+    fileAStream: readStreamA,
+    fileBStream: readStreamB,
   });
   
-
-  const readStream = fs.createReadStream(path.join(__dirname, `../data/${MATRIX_CONSTS.RANDOM_MATRIX_FILENAME}`), { encoding: 'utf-8' });
-  readStream.on('data', (chunk) => {
-    console.log(chunk.charAt(3));
-    // console.log(Object.getOwnPropertyNames(chunk));
-    // chunk.forEach(x => console.log(x));
-    console.log('got chunkk: ', chunk.length);
+  const resultFilePath = await filesUtils.saveMatrixToFile({ fileName: MATRIX_CONSTS.RESULT_MATRIX_FILENAME, matrix: result });
+  
+  res.status(201).sendFile(resultFilePath, (err) => {
+    if (err) { res.status(500).end(err) }
   });
 
-  res.send('done');
+  // const readStream = fs.createReadStream(path.join(__dirname, `../data/${MATRIX_CONSTS.RANDOM_MATRIX_FILENAME}`), { encoding: 'utf-8' });
+  // readStream.on('data', (chunk) => {
+  //   console.log(chunk.charAt(3));
+  //   // console.log(Object.getOwnPropertyNames(chunk));
+  //   // chunk.forEach(x => console.log(x));
+  //   console.log('got chunkk: ', chunk.length);
+  // });
 });
 
 export default router;
