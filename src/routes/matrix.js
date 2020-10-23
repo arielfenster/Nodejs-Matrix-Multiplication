@@ -2,9 +2,10 @@ import express from "express";
 import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
-import streamifier from 'streamifier';
-import { generateMatrix, saveMatrixToFile } from '../utils/matrix';
-import { MATRIX_CONSTS, UPLOAD_CONSTS } from '../utils/constants';
+import matrixUtils from '../utils/matrix';
+import filesUtils from '../utils/files';
+import mathUtils from '../utils/math';
+import { MATRIX_CONSTS, UPLOAD_CONSTS } from '../resources/constants';
 
 // Create a multer middleware for uploading files (create an empty one so we can create streams instead of instantaneous upload)
 const upload = multer();
@@ -14,15 +15,15 @@ const router = express.Router();
 /**
  * @description Generate a random matrix with given dimensions 
  */
-router.post('/generate', (req, res) => {
+router.post('/generate', async (req, res) => {
   // Check the sizes entered
   const { height, width } = req.body;
   
-  const matrix = generateMatrix({ height, width });
+  const matrix = matrixUtils.generateMatrix({ height, width });
   
-  saveMatrixToFile(MATRIX_CONSTS.RANDOM_MATRIX_FILENAME, matrix);
-
-  res.status(201).sendFile(path.join(__dirname, `../data/${MATRIX_CONSTS.RANDOM_MATRIX_FILENAME}`), (err) => {
+  const savedFilePath = await filesUtils.saveMatrixToFile({ fileName: MATRIX_CONSTS.RANDOM_MATRIX_FILENAME, matrix });
+  
+  res.status(201).sendFile(savedFilePath, (err) => {
     if (err) { res.status(500).send(err) }
   });
 });
@@ -34,17 +35,14 @@ router.post('/generate', (req, res) => {
 router.post('/', upload.fields([
   { name: UPLOAD_CONSTS.MATRIX_A, maxCount: 1 },
   { name: UPLOAD_CONSTS.MATRIX_B, maxCount: 1 }]) ,(req, res) => {
+
     const { files } = req;
-
-    for (const fileKey in files) {
-      const file = files[fileKey][0];
-      const { buffer } = file;
-      
-      const writeStream = fs.createWriteStream(path.join(__dirname, `../data/${fileKey}.txt`));
-      streamifier.createReadStream(buffer).pipe(writeStream);
-    }
-
-    res.status(200).send('Uploaded the files');
+    filesUtils.uploadFiles(files);
+    
+    res.status(200).json({
+      success: true,
+      message: 'Uploaded files'
+    });
 });
 
 
@@ -52,7 +50,21 @@ router.post('/', upload.fields([
  * @description Calculate the product of the matrices
  */
 router.get('/', (req, res) => {
+  const result = calculate({
+    streamFileA: 123,
+    streamFileB: 213,
+  });
+  
 
+  const readStream = fs.createReadStream(path.join(__dirname, `../data/${MATRIX_CONSTS.RANDOM_MATRIX_FILENAME}`), { encoding: 'utf-8' });
+  readStream.on('data', (chunk) => {
+    console.log(chunk.charAt(3));
+    // console.log(Object.getOwnPropertyNames(chunk));
+    // chunk.forEach(x => console.log(x));
+    console.log('got chunkk: ', chunk.length);
+  });
+
+  res.send('done');
 });
 
 export default router;
