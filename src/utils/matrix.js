@@ -21,21 +21,10 @@ const generateMatrix = ({ height, width }) => {
       matrix[i][j] = Math.floor(Math.random() * (MAX-MIN) + MIN);
     }
   }
+
   return matrix;
-};
-
-// Gets a string representation of the matrix to display it in rows
-const parseMatrix = (matrix) => {
-  let output = '';
-  
-  matrix.forEach(row => {
-    output += row.join(', ') + '\n';
-  });
-
-  return output;
 };
 
 export default {
   generateMatrix,
-  parseMatrix,
 };

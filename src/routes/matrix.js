@@ -1,5 +1,4 @@
 import express from "express";
-import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
 import matrixUtils from '../utils/matrix';
@@ -37,7 +36,7 @@ router.post('/', upload.fields([
   { name: UPLOAD_CONSTS.MATRIX_B, maxCount: 1 }]) ,(req, res) => {
 
     const { files } = req;
-    filesUtils.uploadFiles(files);
+    filesUtils.uploadMatricesFiles(files);
     
     res.status(200).json({
       success: true,
@@ -56,24 +55,16 @@ router.get('/', async (req, res) => {
   const readStreamA = fs.createReadStream(matrixAPath, { encoding: 'utf-8' });
   const readStreamB = fs.createReadStream(matrixBPath, { encoding: 'utf-8' });
 
-  const result = mathUtils.calculate({
+  const result = await mathUtils.calculate({
     fileAStream: readStreamA,
     fileBStream: readStreamB,
   });
   
-  const resultFilePath = await filesUtils.saveMatrixToFile({ fileName: MATRIX_CONSTS.RESULT_MATRIX_FILENAME, matrix: result });
+  const resultFilePath = await filesUtils.saveMatrixToFile({ fileName: MATRIX_CONSTS.RESULT_MATRIX_FILENAME, matrix: result.valueOf() });
   
   res.status(201).sendFile(resultFilePath, (err) => {
     if (err) { res.status(500).end(err) }
   });
-
-  // const readStream = fs.createReadStream(path.join(__dirname, `../data/${MATRIX_CONSTS.RANDOM_MATRIX_FILENAME}`), { encoding: 'utf-8' });
-  // readStream.on('data', (chunk) => {
-  //   console.log(chunk.charAt(3));
-  //   // console.log(Object.getOwnPropertyNames(chunk));
-  //   // chunk.forEach(x => console.log(x));
-  //   console.log('got chunkk: ', chunk.length);
-  // });
 });
 
 export default router;

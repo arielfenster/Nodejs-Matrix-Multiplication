@@ -1,31 +1,33 @@
 import { matrix, multiply } from 'mathjs';
+import csvParse from 'csv-parse'
 
-const calculate = ({ fileAStream, fileBStream }) => {
+const createPromiseOfStream = (fileStream) => {
+  const stream = fileStream.pipe(csvParse({
+    skipEmptyLines: true,
+    cast: (x) => parseInt(x),
+  }));
   
-  let i=1;
-  fileAStream.on('data', (chunk) => {
-    // console.log(`got chunk #${i}`);
-    // i++;
+  return new Promise((resolve, reject) => {
+    const data = [];
+
+    stream.on('data', (row) => data.push(row));
+    stream.on('end', () => resolve(matrix(data)));
+    stream.on('error', (error) => reject(error));
   });
-  const mat1 = matrix([
-    [1,2,3],
-    [1,2,3],
-    [1,2,3],
-    [1,2,3],
-    [1,2,3]
+};
+
+const calculate = async ({ fileAStream, fileBStream }) => {
+  const [matrixA, matrixB] = await Promise.all([
+    createPromiseOfStream(fileAStream),
+    createPromiseOfStream(fileBStream)
   ]);
-  const mat2 = matrix([
-    [1,2,3,4],
-    [1,2,3,4],
-    [1,2,3,4],
-  ]);
-  const sm1 = matrix([
-    [1],[2],[3]
-  ]);
-  const sm2 = matrix([1,2,3]);
-  console.log(sm1.size(), sm2.size());
-  console.log(multiply(sm1,sm2).valueOf());
-  return multiply(mat1, mat2).valueOf();
+
+  try {
+    return multiply(matrixA, matrixB);
+  } catch (error) {
+    console.error('Error in calculating the product: ', error.message);
+    return null;
+  }
 };
 
 
