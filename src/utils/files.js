@@ -22,20 +22,15 @@ const saveMatrixToFile = async ({ fileName, matrix }) => {
   const csvWriter = createArrayCsvWriter({ path: filePath });
   
   // Save the file and return the path that it was saved to
-  try {
     await csvWriter.writeRecords(matrix);
     return filePath;
-  } catch (error) {
-    console.error('Failed to save the file: ', error);
-    return null;
-  }
 };
 
 const uploadMatricesFiles = (files) => {
   for (const fileKey in files) {
     const file = files[fileKey][0];
     const { buffer } = file;
-    
+
     const writeStream = fs.createWriteStream(path.join(__dirname, `../data/${fileKey}.csv`));
     streamifier.createReadStream(buffer).pipe(writeStream);
   }
