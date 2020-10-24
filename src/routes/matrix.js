@@ -28,7 +28,7 @@ router.post('/generate', async (req, res) => {
 
     // Send the user the generated file
     return res.status(201).sendFile(savedFilePath, (err) => {
-      if (err) { res.status(500).end(err) }
+      if (err) { return res.status(500).end(err) }
     });
 
   } catch (error) {
@@ -75,7 +75,7 @@ router.get('/', async (req, res) => {
     result = await mathUtils.calculate(readStreamA, readStreamB);
   } catch (error) {
     // Notify calculation error
-    return res.send(error.status).json({
+    return res.status(500).json({
       success: false,
       message: `Error in calculating: ${error.message}`
     });
@@ -89,11 +89,11 @@ router.get('/', async (req, res) => {
     });
     
     return res.status(201).sendFile(resultFilePath, (err) => {
-      if (err) { res.status(500).end(err) }
+      if (err) { return res.status(500).send(err) }
     });
   } catch (error) {
     // Notify saving result matrix file error
-    res.status(error.status).json({
+    res.status(500).json({
       success: false,
       message: `Error in saving the result matrix file: ${error.message}`
     });
