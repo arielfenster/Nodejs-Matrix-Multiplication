@@ -73,6 +73,7 @@ router.get('/', async (req, res) => {
   let result;
   try {
     result = await mathUtils.calculate(readStreamA, readStreamB);
+    
   } catch (error) {
     // Notify calculation error
     return res.status(500).json({
@@ -91,6 +92,7 @@ router.get('/', async (req, res) => {
     return res.status(201).sendFile(resultFilePath, (err) => {
       if (err) { return res.status(500).send(err) }
     });
+
   } catch (error) {
     // Notify saving result matrix file error
     res.status(500).json({
